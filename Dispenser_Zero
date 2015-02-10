@@ -1,0 +1,80 @@
+/*
+
+6.270 2015 GOAT DISPENSER 
+
+DISPENSER ##0## ZERO 
+
+Servo Code for Arduino Leonardo
+
+by Will Vahle
+
+vahle(at)mit(dot)edu
+
+*/
+
+
+#include <Servo.h> 
+ 
+Servo nischal;  // create servo object to control a servo 
+
+const int NodePost = 0;    // number for this controller node
+
+const int buttonPin = 2;     // the number of the pushbutton pin
+const int ledPin =  13;      // the number of the LED pin
+const int irLED = 0;         // variable for storing irLED state
+
+ 
+int pos = 30;                 // variable to store the servo position 
+int start = 45;               // servo sweep start
+int dispense_down = 100;       // position for dispense
+
+int IR_value = 0;            // IR led analog read input
+int buttonState = 0;         // variable for reading the pushbutton status
+
+
+
+
+ 
+void setup() 
+{ 
+  nischal.attach(9);             // attaches the servo on pin 9 to the servo object 
+  nischal.write(start);          // set initial servo position
+  nischal.write(start+30);       // sweep cause it looks cool, but not enough to dispense
+  nischal.write(start);
+  
+  
+  
+  pinMode(ledPin, OUTPUT);       // initialize the LED pin as an output:
+  pinMode(buttonPin, INPUT);     // initialize the pushbutton pin as an input:
+  
+  
+  Serial.begin(9600);
+  Serial.println("live ");
+} 
+ 
+ 
+void loop() 
+{ 
+  
+  IR_value = analogRead(A0);           // read the value of light incident on the IR LED\
+  Serial.print(IR_value);
+  Serial.print(" | ");
+ 
+  
+ // buttonState = digitalRead(buttonPin); // read the state of the pushbutton value:
+  
+  if ( IR_value > 200 ) {     
+    digitalWrite(ledPin, HIGH); 
+    
+    nischal.write(dispense_down);      // dispense ball
+    delay (400);                       // wait: this should be long enough
+    nischal.write(start);              // reset dispenser arm
+    delay (600);                       // wait before dispensing the next ball
+  } 
+  else {
+    digitalWrite(ledPin, LOW); 
+    delay (10);
+  }
+  
+  
+} 
